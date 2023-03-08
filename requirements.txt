@@ -1,0 +1,10 @@
+sox
+wget
+tqdm
+pandas
+yt_dlp
+xmltodict
+scikit-image
+ffmpeg-python
+opencv-python
+numpy==1.22
