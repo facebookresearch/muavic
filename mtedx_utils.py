@@ -33,7 +33,7 @@ def download_mtedx_lang_videos(mtedx_path, src_lang):
     for split in ["train", "valid", "test"]:
         out_path = mtedx_path / "video" / src_lang / split
         out_path.mkdir(parents=True, exist_ok=True)
-        if not is_empty(out_path):
+        if is_empty(out_path):
             if split == "train":
                 print(f"\nDownloading {src_lang} videos from YouTube")
             # get youtube-ids from audio filenames inside `wav` directory
@@ -78,7 +78,7 @@ def preprocess_mtedx_audio(mtedx_path, src_lang, muavic_path):
         # create directory for segmented & normalized audio
         out_path = muavic_path / src_lang / "audio" / split
         out_path.mkdir(parents=True, exist_ok=True)
-        if not is_empty(out_path):
+        if is_empty(out_path):
             if split == "train":
                 print(f"\nSegmenting {src_lang} audio files")
             # collect needed info from segment file
