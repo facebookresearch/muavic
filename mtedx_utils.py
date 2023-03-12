@@ -119,6 +119,9 @@ def segment_normalize_video_file(
         .run(quiet=True)
     )
     for seg in video_segments:
+        if not seg['id'] in video_metadata:
+            continue
+
         out_filepath = out_path / video_id / f"{seg['id']}.{video_format}"
         out_filepath.parent.mkdir(parents=True, exist_ok=True)
         # start segmenting
