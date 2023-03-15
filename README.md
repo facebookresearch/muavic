@@ -1,5 +1,5 @@
 MuAViC
-=====
+======
 
 [https://arxiv.org/abs/2303.00628](https://arxiv.org/abs/2303.00628)
 
@@ -87,10 +87,11 @@ python get_data.py --root-path ${ROOT} --src-lang ${SRC_LANG}
 ```
 where the speech language `${SRC_LANG}` is one of `en`, `ar`, `de`, `el`, `es`, `fr`, `it`, `pt` and `ru`.
 
-Generated data will be saved to `${ROOT}`:
-- `${ROOT}/muavic/*.tsv` for AV-HuBERT training manifests
-- `${ROOT}/muavic/audio` for processed audio files
-- `${ROOT}/muavic/video` for processed video files
+Generated data will be saved to `${ROOT}/muavic`:
+- `${ROOT}/muavic/${SRC_LANG}/audio` for processed audio files
+- `${ROOT}/muavic/${SRC_LANG}/video` for processed video files
+- `${ROOT}/muavic/${SRC_LANG}/*.tsv` for AV-HuBERT AVSR training manifests
+- `${ROOT}/muavic/${SRC_LANG}/${TGT_LANG}*.tsv` for AV-HuBERT AVST training manifests
 
 
 # License
