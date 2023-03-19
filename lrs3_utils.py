@@ -330,13 +330,13 @@ def download_ted2020(ted2020_path):
         # download & extract TED2020 data if not
         if not (ted2020_path / f"en-{lang}.tsv").exists():
             tgz_filename = (
-                f"{lang}-en.txt.zip" if lang < "en" else f"en-{lang}.txt.zip"
+                f"{lang}-en.tmx.gz" if lang < "en" else f"en-{lang}.tmx.gz"
             )
             tgz_filepath = ted2020_path / tgz_filename
             if not tgz_filepath.exists():
                 # download file
                 download_file(
-                    f"https://opus.nlpl.eu/download.php?f=TED2020/v1/moses/{tgz_filename}",
+                    f"https://opus.nlpl.eu/download.php?f=TED2020/v1/tmx/{tgz_filename}",
                     ted2020_path,
                 )
             # extract file
