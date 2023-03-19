@@ -371,6 +371,11 @@ def segment_ted2020_sents(src_sents, tgt_sents):
 
 
 def prepare_lrs3_avst_manifests(mt_trans_path, ted2020_path, muavic_path):
+    # download & extract pseudo-translation if that wasn't done already
+    tgz_filename = "en-x.tgz"
+    tgz_filepath = mt_trans_path / tgz_filename
+    url = f"https://dl.fbaipublicfiles.com/muavic/mt_trans/{tgz_filename}"
+    download_extract_file_if_not(url, tgz_filepath)
     # start generating output translation files
     print(f"\nCreating AVST manifests")
     for lang in TARGET_LANGS:
