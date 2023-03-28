@@ -13,7 +13,7 @@ Spanish, French, Italian, Portuguese and Russian)
 - text translations for 6 English-to-X directions and 6 X-to-English directions (X = Greek,
 Spanish, French, Italian, Portuguese or Russian)
 
-<div align="left">
+<div align="center">
     <img src="./assets/data_stats.jpg" alt="MuAViC data statistics" width=560>
 </div>
 
@@ -70,15 +70,43 @@ The raw data is collected from TED/TEDx talk recordings.
 
 We provide scripts to generate the audio/video data and AV-HuBERT training manifests for MuAViC.
 
-As the first step, clone this repo for the scripts
+- First, clone this repo for the scripts
+    ```bash
+    git clone https://github.com/facebookresearch/muavic.git
+    ```
+- Install [ffmpeg](https://ffmpeg.org/):
+    ```bash
+    conda install -c conda-forge ffmpeg==4.2.2
+    ```
+    In case you have access to CUDA, follow these steps to enable GPU usage
+    with ffmpeg:
+    
+    1. Install headers that ffmpeg uses to interact with [NVIDIA's Video Codec
+    SDK](https://developer.nvidia.com/nvidia-video-codec-sdk).
+    ```bash
+    git clone https://git.videolan.org/git/ffmpeg/nv-codec-headers.git
+    chmod 777 -R nv-codec-headers
+    cd nv-codec-headers
+    git checkout n11.0.10.1
+    sudo make install
+    ```
+
+    2. Install ffmpeg's requirements, i.e Yasm and H264 Video Codec
+    ```bash
+    sudo apt -qq update
+    sudo apt -qq install -y yasm libx264-dev libgnutls28-dev
+    ```
+
+    3. Build FFmpeg with NVDEC/NVENC support
+    ```bash
+    
+    ```
+
+- Install required packages:
 ```bash
-git clone https://github.com/facebookresearch/muavic.git
-```
-and install required packages:
-```bash
-conda install -c conda-forge ffmpeg==4.2.2
 pip install -r requirements.txt
 ```
+
 
 Then get audio-visual speech recognition and translation data via
 
@@ -91,7 +119,163 @@ Generated data will be saved to `${ROOT}/muavic`:
 - `${ROOT}/muavic/${SRC_LANG}/audio` for processed audio files
 - `${ROOT}/muavic/${SRC_LANG}/video` for processed video files
 - `${ROOT}/muavic/${SRC_LANG}/*.tsv` for AV-HuBERT AVSR training manifests
-- `${ROOT}/muavic/${SRC_LANG}/${TGT_LANG}*.tsv` for AV-HuBERT AVST training manifests
+- `${ROOT}/muavic/${SRC_LANG}/${TGT_LANG}/*.tsv` for AV-HuBERT AVST training manifests
+
+
+# Models
+
+In the following table, we provide all AV-HuBERT trained models mentioned
+in our paper:
+
+<table align="center">
+    <tr>
+        <th>Task</th>
+        <th>Languages</th>
+        <th>Best Checkpoint</th>
+        <th>Dictionary</th>
+        <th>Tokenizer</th>
+    </tr>
+    <tr>
+        <td rowspan="10">AVSR</td>
+        <th>ar</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ar_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ar_avsr/dict.ar.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ar_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>de</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/de_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/de_avsr/dict.de.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/de_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>el</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/el_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/el_avsr/dict.el.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/el_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en_avsr/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>es</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/es_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/es_avsr/dict.es.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/es_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>fr</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/fr_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/fr_avsr/dict.fr.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/fr_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>it</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/it_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/it_avsr/dict.it.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/it_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>pt</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/pt_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/pt_avsr/dict.pt.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/pt_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>ru</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ru_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ru_avsr/dict.ru.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ru_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>ar,de,el,es,fr,it,pt,ru</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/x_avsr/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/x_avsr/dict.x.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/x_avsr/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <td rowspan="13">AVST</td>
+        <th>en-el</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-el_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-el_avst/dict.el.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-el_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+     <tr>
+        <th>en-es</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-es_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-es_avst/dict.es.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-es_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>en-fr</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-fr_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-fr_avst/dict.fr.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-fr_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>en-it</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-it_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-it_avst/dict.it.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-it_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>en-pt</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-pt_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-pt_avst/dict.pt.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-pt_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>en-ru</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-ru_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-ru_avst/dict.ru.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/en-ru_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>el-en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/el-en_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/el-en_avst/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/el-en_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>es-en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/es-en_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/es-en_avst/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/es-en_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>fr-en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/fr-en_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/fr-en_avst/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/fr-en_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>it-en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/it-en_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/it-en_avst/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/it-en_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>pt-en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/pt-en_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/pt-en_avst/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/pt-en_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>ru-en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ru-en_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ru-en_avst/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/ru-en_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+    <tr>
+        <th>{el,es,fr,it,pt,ru}-en</th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/x-en_avst/checkpoint_best.pt">best_ckpt.pt</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/x-en_avst/dict.en.txt">dict</a></th>
+        <th><a href="https://dl.fbaipublicfiles.com/muavic/models/x-en_avst/tokenizer.model">tokenizer</a></th>
+    </tr>
+</table>
 
 
 # License
