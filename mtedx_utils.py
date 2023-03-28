@@ -8,6 +8,7 @@ import cv2
 import sox
 import shutil
 import tempfile
+import warnings
 import pandas as pd
 from functools import partial
 from collections import defaultdict, OrderedDict
@@ -26,6 +27,7 @@ def download_mtedx_data(download_path, src, tgt):
     download_extract_file_if_not(
         url=f"https://www.openslr.org/resources/100/{tgz_filename}",
         tgz_filepath=download_path / tgz_filename,
+        download_filename=f"{src}-{tgt}"
     )
 
 
@@ -39,7 +41,7 @@ def download_mtedx_lang_videos(mtedx_path, src_lang):
     for split in SPLITS:
         out_path = mtedx_path / "video" / src_lang / split
         out_path.mkdir(parents=True, exist_ok=True)
-        if is_empty(out_path):
+        if is_empty(out_path): #TODO: better check
             if split == "train":
                 print(f"\nDownloading {src_lang} videos from YouTube")
             # get youtube-ids from audio filenames inside `wav` directory
@@ -79,44 +81,46 @@ def segment_normalize_audio_file(out_dir, in_file_info):
 
 
 def preprocess_mtedx_audio(mtedx_path, src_lang, muavic_path):
-    # get files id per split
     for split in SPLITS:
+        split_dir_path = mtedx_path / f"{src_lang}-{src_lang}" / "data" / split
+        audio_segments = list(read_txt_file(split_dir_path / "txt" / "segments"))
         # create directory for segmented & normalized audio
         out_path = muavic_path / src_lang / "audio" / split
         out_path.mkdir(parents=True, exist_ok=True)
-        if is_empty(out_path):
-            if split == "train":
-                print(f"\nSegmenting {src_lang} audio files")
-            # collect needed info from segment file
-            segments_info = []
-            split_dir_path = mtedx_path / f"{src_lang}-{src_lang}" / "data" / split
-            wav_dir_path = split_dir_path / "wav"
-            segment_file = split_dir_path / "txt" / "segments"
-
-            for line in read_txt_file(segment_file):
-                seg_id, fid, start, end = line.strip().split(" ")
-                segments_info.append(
-                    (
-                        wav_dir_path / (fid + ".flac"),
-                        fid,
-                        seg_id,
-                        float(start),
-                        float(end),
-                    )
+        # early-quit condition
+        num_curr_audio_segments = len(list(out_path.rglob("*.wav")))
+        if num_curr_audio_segments == len(audio_segments):
+            continue # skip if all audio segments are already processed
+        if split == "train":
+            print(f"\nSegmenting {src_lang} audio files")
+        # collect needed info from segment file
+        segments_info = []
+        wav_dir_path = split_dir_path / "wav"
+        for line in audio_segments:
+            seg_id, fid, start, end = line.strip().split(" ")
+            segments_info.append(
+                (
+                    wav_dir_path / (fid + ".flac"),
+                    fid,
+                    seg_id,
+                    float(start),
+                    float(end),
                 )
-            # preprocess audio files
-            process_map(
-                partial(segment_normalize_audio_file, out_path),
-                segments_info,
-                max_workers=os.cpu_count(),
-                desc=f"Preprocessing {src_lang}/{split} Audios",
-                chunksize=1,
             )
+        # preprocess audio files
+        process_map(
+            partial(segment_normalize_audio_file, out_path),
+            segments_info,
+            max_workers=os.cpu_count(),
+            desc=f"Preprocessing {src_lang}/{split} Audios",
+            chunksize=1,
+        )
 
 
 def segment_normalize_video(mean_face_metadata, in_path, out_path, seg_info):
     fps = 25
-    out_filepath = out_path / f"{seg_info['id']}.mp4"
+    out_format = "mp4"
+    out_filepath = out_path / f"{seg_info['id']}.{out_format}"
     # skip if file is already segmented
     if out_filepath.exists():
         return
@@ -127,36 +131,47 @@ def segment_normalize_video(mean_face_metadata, in_path, out_path, seg_info):
         round(seg_info["end"] * fps)
         if seg_metadata_length == 0
         else fstart + seg_metadata_length
-    )  # handles minor mismatches between metadata-length and video length
+    )  # handles minor mismatches between metadata-length and video-length
     if fstart == fend:
         fend = fstart + 1  # adding 1-frame
     num_frames = fend - fstart
-    video_frames = (cv2.imread(f"{in_path}/{i}.png") for i in range(fstart, fend))
+    vid_frames = (
+        cv2.imread(f"{in_path}/{i}.png")
+        for i in range(fstart, fend)
+        if os.path.exists(f"{in_path}/{i}.png")
+    )
     if seg_metadata_length > 0:
+        # detect the mouth ROI and crop it
         frames = crop_patch(
-            video_frames,
+            vid_frames,
             num_frames,
             seg_info["metadata"],
             mean_face_metadata,
-            std_size=(256, 256),
         )
     else:
-        frames = resize_frames(video_frames, new_size=(96, 96))
+        # resize the frames (since there were no metadata for it)
+        frames = resize_frames(vid_frames, new_size=(96, 96))
     # save video
     save_video(frames, out_filepath, fps)
 
 
 def preprocess_mtedx_video(mtedx_path, metadata_path, src_lang, muavic_path):
     mean_face_metadata = load_meanface_metadata(metadata_path)
-    # get files id per split
     for split in SPLITS:
+        split_dir_path = mtedx_path / f"{src_lang}-{src_lang}" / "data" / split
+        video_segments = list(read_txt_file(split_dir_path / "txt" / "segments"))
+        # create directory for segmented & normalized video
         out_path = muavic_path / src_lang / "video" / split
         out_path.mkdir(parents=True, exist_ok=True)
-        # TODO: create an early-check before starting
-        print(
-            f"\nSegmenting `{src_lang}` videos files "
-            + "(It takes a few hours to complete)"
-        )
+        # early-quit condition (might be TOO STRICT)
+        num_curr_video_segments = len(list(out_path.rglob("*.mp4")))
+        if num_curr_video_segments == len(video_segments):
+            continue # skip if all video segments are already processed
+        if split == "train":
+            print(
+                f"\nSegmenting `{src_lang}` videos files "
+                + "(It takes a few hours to complete)"
+            )
         # collect needed info from segment file
         segment_file = (
             mtedx_path / f"{src_lang}-{src_lang}" / "data" / split / "txt" / "segments"
@@ -188,6 +203,9 @@ def preprocess_mtedx_video(mtedx_path, metadata_path, src_lang, muavic_path):
                 continue
             # prepare to process video file
             in_filepath = in_video_dir_path / f"{video_id}.{video_format}"
+            if not in_filepath.exists():
+                warnings.warn(f"Skipping {in_filepath}!!")
+                continue
             tmp_dir_path = tempfile.mkdtemp()
             (
                 ffmpeg.input(str(in_filepath))
@@ -195,7 +213,7 @@ def preprocess_mtedx_video(mtedx_path, metadata_path, src_lang, muavic_path):
                 .output(f"{tmp_dir_path}/%d.png", start_number=0)
                 .run(quiet=True)
             )
-            # add landmarks to video_segments
+            # add metadata to video_segments
             video_metadata = load_video_metadata(
                 metadata_path / src_lang / split / f"{video_id}.pkl"
             )
@@ -255,12 +273,12 @@ def prepare_mtedx_avsr_manifests(mtedx_path, lang, muavic_path):
 
 
 def prepare_mtedx_avst_manifests(mtedx_path, mt_trans_path, lang, muavic_path):
-    # download & extradt pseudo-translation if that wasn't done already
+    # download & extract pseudo-translation if that wasn't done already
     lang_pair = f"{lang}-en"
     tgz_filename = f"{lang_pair}.tgz"
     tgz_filepath = mt_trans_path / tgz_filename
     url = f"https://dl.fbaipublicfiles.com/muavic/mt_trans/{tgz_filename}"
-    download_extract_file_if_not(url, tgz_filepath)
+    download_extract_file_if_not(url, tgz_filepath, lang_pair)
 
     for split in tqdm(SPLITS):
         # set output files

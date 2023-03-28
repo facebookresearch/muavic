@@ -65,12 +65,13 @@ def download_file(url, download_path):
     return True
 
 
-def extract_tgz(tgz_filepath, extract_path):
+def extract_tgz(tgz_filepath, extract_path, out_filename=None):
     if not tgz_filepath.exists():
         raise FileNotFoundError(f"{tgz_filepath} is not found!!")
     tgz_filename = tgz_filepath.name
     tgz_object = tarfile.open(tgz_filepath)
-    out_filename = tgz_object.getnames()[0]
+    if not out_filename:
+        out_filename = tgz_object.getnames()[0]
     # check if file is already extracted
     if not (extract_path / out_filename).exists():
         for mem in tqdm(tgz_object.getmembers(), desc=f"Extracting {tgz_filename}"):
@@ -80,13 +81,13 @@ def extract_tgz(tgz_filepath, extract_path):
     tgz_object.close()
 
 
-def download_extract_file_if_not(url, tgz_filepath):
+def download_extract_file_if_not(url, tgz_filepath, download_filename):
     download_path = tgz_filepath.parent
     if not tgz_filepath.exists():
         # download file
         download_file(url, download_path)
     # extract file
-    extract_tgz(tgz_filepath, download_path)
+    extract_tgz(tgz_filepath, download_path, download_filename)
 
 
 def load_meanface_metadata(metadata_path):
@@ -106,8 +107,9 @@ def load_video_metadata(filepath):
         lang = lang_dir.name
         tgz_filepath = lang_dir.parent / f"{lang}_metadata.tgz"
         download_extract_file_if_not(
-            f"https://dl.fbaipublicfiles.com/muavic/metadata/{lang}_metadata.tgz",
-            tgz_filepath,
+            url=f"https://dl.fbaipublicfiles.com/muavic/metadata/{lang}_metadata.tgz",
+            tgz_filepath=tgz_filepath,
+            download_filename=lang
         )
     assert filepath.exists(), f"{filepath} should've been downloaded!"
     with open(filepath, "rb") as fin:
@@ -148,7 +150,13 @@ def download_video_from_youtube(download_path, yt_id):
 
 
 def resize_frames(input_frames, new_size):
-    return [cv2.resize(frame, new_size) for frame in input_frames]
+    resized_frames = []
+    for frame in input_frames:
+        try:
+            resized_frames.append(cv2.resize(frame, new_size))
+        except:
+            pass #some frames are corrupt or missing
+    return resized_frames
 
 
 def get_audio_duration(audio_filepath):
@@ -193,9 +201,7 @@ def get_audio_video_info(audio_path, video_path, fid):
 
 def split_video_to_frames(video_filepath, fstart=None, fend=None, out_fps=25):
     # src: https://github.com/kylemcdonald/python-utils/blob/master/ffmpeg.py
-    # in_params = {}
-    # if hwaccel is not None:
-    #     in_params['hwaccel'] = hwaccel
+    #NOTE: splitting video into frames is faster on CPU than GPU
     width, height = get_video_resolution(video_filepath)
     video_stream = ffmpeg.input(str(video_filepath)).video.filter("fps", fps=out_fps)
     channels = 3
@@ -254,15 +260,15 @@ def save_video(frames, out_filepath, fps, vcodec="libx264"):
     process.wait()
 
 
-# def load_video(filename):
-#     cap = cv2.VideoCapture(filename)
-#     while cap.isOpened():
-#         ret, frame = cap.read()  # BGR
-#         if ret:
-#             yield frame
-#         else:
-#             break
-#     cap.release()
+def load_video(filename):
+    cap = cv2.VideoCapture(filename)
+    while cap.isOpened():
+        ret, frame = cap.read()  # BGR
+        if ret:
+            yield frame
+        else:
+            break
+    cap.release()
 
 
 def warp_img(src, dst, img, std_size):
@@ -318,7 +324,7 @@ def crop_patch(
     num_frames,
     metadata,
     mean_face_metadata,
-    std_size,
+    std_size=(256, 256),
     window_margin=12,
     start_idx=48,
     stop_idx=68,

@@ -6,7 +6,6 @@
 import os, re
 import shutil
 import xmltodict
-import itertools
 import pandas as pd
 from gzip import GzipFile
 from functools import partial
@@ -142,7 +141,7 @@ def segment_pretrain_videos_and_text(lrs3_path):
     seg_pretrain_path = lrs3_path / "seg_pretrain"
     seg_pretrain_path.mkdir(parents=True, exist_ok=True)
     if len(list(seg_pretrain_path.rglob("*.mp4"))) == 268864:
-        return
+        return # skip if all pretrain videos have already been segmented
 
     pretrain_path = lrs3_path / "pretrain"
     df = create_manifest_for_pretrain(pretrain_path)
@@ -218,10 +217,10 @@ def process_lrs3_videos(lrs3_path, metadata_path, muavic_path):
     mean_face_metadata = load_meanface_metadata(metadata_path)
     for split in ["seg_pretrain", "trainval", "test"]:
         fids = [
-            str(filepaths.relative_to(lrs3_path / split))[:-4]  # removes file ext
+            str(filepaths.relative_to(lrs3_path / split))[:-4]  # removes .mp4
             for filepaths in (lrs3_path / split).rglob("*.mp4")
         ]
-        # map LRS3 splits to either train, valid, or test.
+        # map LRS3 original splits to either train, valid, or test
         if split == "seg_pretrain":
             fids = [(split, "train", id_) for id_ in fids]
         elif split == "trainval":
@@ -375,7 +374,7 @@ def prepare_lrs3_avst_manifests(mt_trans_path, ted2020_path, muavic_path):
     tgz_filename = "en-x.tgz"
     tgz_filepath = mt_trans_path / tgz_filename
     url = f"https://dl.fbaipublicfiles.com/muavic/mt_trans/{tgz_filename}"
-    download_extract_file_if_not(url, tgz_filepath)
+    download_extract_file_if_not(url, tgz_filepath, "en-x")
     # start generating output translation files
     print(f"\nCreating AVST manifests")
     for lang in TARGET_LANGS:
