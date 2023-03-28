@@ -70,46 +70,18 @@ The raw data is collected from TED/TEDx talk recordings.
 
 We provide scripts to generate the audio/video data and AV-HuBERT training manifests for MuAViC.
 
-- First, clone this repo for the scripts
-    ```bash
-    git clone https://github.com/facebookresearch/muavic.git
-    ```
-- Install [ffmpeg](https://ffmpeg.org/):
-    ```bash
-    conda install -c conda-forge ffmpeg==4.2.2
-    ```
-    In case you have access to CUDA, follow these steps to enable GPU usage
-    with ffmpeg:
-    
-    1. Install headers that ffmpeg uses to interact with [NVIDIA's Video Codec
-    SDK](https://developer.nvidia.com/nvidia-video-codec-sdk).
-    ```bash
-    git clone https://git.videolan.org/git/ffmpeg/nv-codec-headers.git
-    chmod 777 -R nv-codec-headers
-    cd nv-codec-headers
-    git checkout n11.0.10.1
-    sudo make install
-    ```
-
-    2. Install ffmpeg's requirements, i.e Yasm and H264 Video Codec
-    ```bash
-    sudo apt -qq update
-    sudo apt -qq install -y yasm libx264-dev libgnutls28-dev
-    ```
-
-    3. Build FFmpeg with NVDEC/NVENC support
-    ```bash
-    
-    ```
-
-- Install required packages:
+First, clone this repo for the scripts
 ```bash
+git clone https://github.com/facebookresearch/muavic.git
+```
+
+Install required packages:
+```bash
+conda install -c conda-forge ffmpeg==4.2.2
 pip install -r requirements.txt
 ```
 
-
 Then get audio-visual speech recognition and translation data via
-
 ```bash
 python get_data.py --root-path ${ROOT} --src-lang ${SRC_LANG}
 ```
