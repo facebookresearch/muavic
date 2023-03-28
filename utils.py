@@ -11,6 +11,7 @@ import yt_dlp
 import ffmpeg
 import pickle
 import tarfile
+import warnings
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -111,6 +112,9 @@ def load_video_metadata(filepath):
             tgz_filepath=tgz_filepath,
             download_filename=lang
         )
+    if not filepath.exists():
+        # file doesn't have metadata
+        return None
     assert filepath.exists(), f"{filepath} should've been downloaded!"
     with open(filepath, "rb") as fin:
         metadata = pickle.load(fin)
@@ -242,6 +246,12 @@ def split_video_to_frames(video_filepath, fstart=None, fend=None, out_fps=25):
 
 
 def save_video(frames, out_filepath, fps, vcodec="libx264"):
+    if len(frames) == 0:
+        warnings.warn(
+            f"Video segment `{out_filepath.stem}` has no metadata..." +
+            " skipping!!" 
+        )
+        return
     height, width, _ = frames[0].shape
     process = (
         ffmpeg.input(

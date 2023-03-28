@@ -204,7 +204,10 @@ def preprocess_mtedx_video(mtedx_path, metadata_path, src_lang, muavic_path):
             # prepare to process video file
             in_filepath = in_video_dir_path / f"{video_id}.{video_format}"
             if not in_filepath.exists():
-                warnings.warn(f"Skipping {in_filepath}!!")
+                warnings.warn(
+                    f"TED talk `{in_filepath.stem}` hasn't been downloaded..." +
+                    " skipping!!" 
+                )
                 continue
             tmp_dir_path = tempfile.mkdtemp()
             (
@@ -213,12 +216,19 @@ def preprocess_mtedx_video(mtedx_path, metadata_path, src_lang, muavic_path):
                 .output(f"{tmp_dir_path}/%d.png", start_number=0)
                 .run(quiet=True)
             )
-            # add metadata to video_segments
+            # load metadata
             video_metadata = load_video_metadata(
                 metadata_path / src_lang / split / f"{video_id}.pkl"
             )
+            if video_metadata is None:
+                warnings.warn(
+                    f"TED talk `{in_filepath.stem}` doesn't have metadata..." +
+                    " skipping!!"
+                )
+                continue
+            # add metadata to video_segments
             for seg in video_segments:
-                seg["metadata"] = video_metadata[seg["id"]]
+                seg["metadata"] = video_metadata.get(seg["id"], [])
             # set the output path for the video segments
             out_seg_path = out_path / video_id
             out_seg_path.mkdir(parents=True, exist_ok=True)
