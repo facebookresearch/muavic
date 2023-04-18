@@ -250,7 +250,11 @@ def preprocess_mtedx_video(mtedx_path, metadata_path, src_lang, muavic_path):
 
 def get_mtedx_fileids(segment_filepath):
     # get segments file in mtedx dataset
-    return [ln.split()[0] for ln in read_txt_file(segment_filepath)]
+    fids = []
+    for ln in read_txt_file(segment_filepath):
+        seg_id, talk_id, _, _ = ln.split()
+        fids.append(f"{talk_id}/{seg_id}")
+    return fids
 
 
 def prepare_mtedx_avsr_manifests(mtedx_path, lang, muavic_path):
