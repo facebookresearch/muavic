@@ -478,5 +478,5 @@ def prepare_lrs3_avst_manifests(mt_trans_path, ted2020_path, muavic_path):
                     merged_trans = merged_trans.loc[matched_indices]
                     # write out the results
                     write_txt_file(merged_trans[lang].tolist(), out_tgt_filepath)
-                    merged_trans.drop([lang], axis=1, inplace=True)
+                    merged_trans.drop(["en", lang], axis=1, inplace=True)
                     write_av_manifest(merged_trans, out_manifest_filepath)
