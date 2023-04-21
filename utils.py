@@ -168,10 +168,14 @@ def get_audio_duration(audio_filepath):
 
 
 def get_video_duration(video_filepath):
-    for stream in ffmpeg.probe(video_filepath)["streams"]:
-        if stream["codec_type"] == "video":
-            return float(stream["duration"])
-    raise TypeError(f"Input file: {video_filepath} doesn't have video stream!")
+    try:
+        streams = ffmpeg.probe(video_filepath)["streams"]
+        for stream in streams:
+            if stream["codec_type"] == "video":
+                return float(stream["duration"])
+    except:
+        warnings.warn(f"Video file: `{video_filepath}` is corrupted... skipping!!")
+        return -1
 
 
 def get_video_resolution(video_filepath):
