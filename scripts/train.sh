@@ -10,10 +10,6 @@
 LANG=???
 OUT_PATH=???
 PRETRAINED_MODEL_PATH=???
-LANG=en-fr
-OUT_PATH=/private/home/anwarvic/muavic/muavic_internal/trained_models
-PRETRAINED_MODEL_PATH=/private/home/anwarvic/tools/avhubert/large_vox_iter5.pt
-NOISE_PATH=/checkpoint/anwarvic/data/musan-noise/all-for-training
 
 
 # activate conda env
@@ -26,7 +22,6 @@ conda activate avst
 
 # set paths
 ROOT=$(dirname "$(dirname "$(readlink -fm "$0")")")
-ROOT=/private/home/anwarvic/muavic/muavic_internal
 AV_HUBERT=${ROOT}/av_hubert/avhubert
 MUAVIC=${ROOT}/muavic
 # fix variables based on langauge
@@ -83,6 +78,4 @@ fairseq-hydra-train \
         optimization.max_update=30000 \
         lr_scheduler.warmup_steps=10000 \
         lr_scheduler.decay_steps=20000 \
-        +task.noise_prob=0.25 \
-        +task.noise_wav=${NOISE_PATH} \
         hydra.run.dir=${OUT_PATH}/${LANG}
