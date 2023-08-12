@@ -11,7 +11,7 @@ advances in speech recognition, this demo app provides a unique opportunity
 to explore the power of audio visual models in a user-friendly and interactive
 way.
 
-https://user-images.githubusercontent.com/15960959/235804264-cd086035-ce78-4c85-968c-f8617dc10d60.mp4
+https://github.com/facebookresearch/muavic/assets/15960959/d03df3b0-488c-443c-ba3b-452b1a5765d8
 
 > Note:\
 All models were trained using Meta's
