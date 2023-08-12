@@ -11,15 +11,6 @@ LANG=???
 OUT_PATH=???
 PRETRAINED_MODEL_PATH=???
 
-
-# activate conda env
-module load anaconda3/2022.05
-module unload cuda cudnn
-module load cuda/11.6 cudnn/v8.4.1.50-cuda.11.6
-eval "$(conda shell.bash hook)"
-conda activate avst
-
-
 # set paths
 ROOT=$(dirname "$(dirname "$(readlink -fm "$0")")")
 AV_HUBERT=${ROOT}/av_hubert/avhubert
