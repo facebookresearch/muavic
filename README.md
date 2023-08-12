@@ -78,6 +78,7 @@ git clone https://github.com/facebookresearch/muavic.git
 Install required packages:
 ```bash
 conda install -c conda-forge ffmpeg==4.2.2
+conda install -c conda-forge sox
 pip install -r requirements.txt
 ```
 
@@ -96,7 +97,7 @@ Generated data will be saved to `${ROOT}/muavic`:
 
 # Models
 
-In the following table, we provide all AV-HuBERT trained models mentioned
+In the following table, we provide all end-to-end trained models mentioned
 in our paper:
 
 <table align="center">
@@ -250,6 +251,86 @@ in our paper:
 </table>
 
 
+# Demo
+
+To try out our state-of-the-art audio-visual models with different
+audio and video inputs, including a recorded video through the webcam or 
+an uploaded video, checkout our demo:
+
+> LINK TO THE VIDEO
+
+You can read more about our model in the [README](https://github.com/facebookresearch/muavic/tree/main/demo) file in the demo folder.
+# Training
+
+For training Audio-Visual models, we are going to use
+[AV-HuBERT](https://github.com/facebookresearch/av_hubert) framework.
+
+1. Clone and install AV-HuBERT in the root directory:
+    ```bash
+    $ # Clone the "muavic" branch of av_hubert's repo
+    $ git -b muavic clone https://github.com/facebookresearch/av_hubert.git
+    $ # Set the fairseq version
+    $ cd avhubert
+    $ git submodule init
+    $ git submodule update
+    $ # Install av-hubert's requirements
+    $ pip install -r requirements.txt
+    $ # Install fairseq
+    $ cd fairseq
+    $ pip install --editable ./
+    ```
+
+2. Download an AV-HuBERT pre-trained model from [here](http://facebookresearch.github.io/av_hubert).
+
+3. Open the training script ([`scripts/train.sh`](https://github.com/facebookresearch/muavic/tree/main/scripts/train.sh)) and replace these variables:
+    ```bash
+    # language direction (e.g "en" or "en-fr")
+    LANG=
+
+    # path where output trained models will be located
+    OUT_PATH= 
+
+    # path to the downloaded pre-trained model
+    PRETRAINED_MODEL_PATH=
+    ```
+
+4. Run the training script:
+    ```bash
+    $ bash scripts/train.sh
+    ```
+
+> Note:\
+All audio-visual models found [here](https://github.com/facebookresearch/muavic#models)
+used the `large_vox_iter5.pt` pre-trained model.
+
+
+# Decoding/Evaluating
+
+To evaluate your trained model (or our [trained models]()) against MuAViC, follow
+these steps:
+
+1. Open the decoding script ([`scripts/decode.sh`](https://github.com/facebookresearch/muavic/tree/main/scripts/decode.sh)) and replace these variables:
+    ```bash
+    # language direction (e.g "en" or "en-fr")
+    LANG=???
+
+    # data split (e.g "test" or "valid")
+    GROUP=???
+
+    # inference modality (choices: "audio", "video", "audio,video")
+    MODALITIES=???
+
+    # path to the trained model
+    MODEL_PATH=???
+
+    # path where decoding results and scores will be located
+    OUT_PATH=???
+    ```
+
+2. Run the decoding script:
+    ```bash
+    $ bash scripts/decode.sh
+    ```
 # License
 
 CC-BY-NC 4.0
