@@ -10,7 +10,6 @@ demo/av_models/*
 
 # project-specific
 *.out
-*.sh
 
 # IDE-related
 .vscode
