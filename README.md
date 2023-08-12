@@ -14,8 +14,9 @@ Spanish, French, Italian, Portuguese and Russian)
 Spanish, French, Italian, Portuguese or Russian)
 
 <div align="center">
-    <img src="./assets/data_stats.jpg" alt="MuAViC data statistics" width=560>
+    <img src="https://github.com/facebookresearch/muavic/assets/15960959/ef144a70-3def-4742-9469-4d5c505502d0" alt="MuAViC data statistics" width=560>
 </div>
+
 
 The raw data is collected from TED/TEDx talk recordings.
 
