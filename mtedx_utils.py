@@ -259,7 +259,7 @@ def get_mtedx_fileids(segment_filepath):
 
 def prepare_mtedx_avsr_manifests(mtedx_path, lang, muavic_path):
     for split in SPLITS:
-        out_manifest_filepath = muavic_path / lang / f"{split}_avsr.tsv"
+        out_manifest_filepath = muavic_path / lang / f"{split}.tsv"
         if not out_manifest_filepath.exists():
             if split == "train":
                 print(f"\nCreating AVSR manifests for `{lang}`")
@@ -282,7 +282,7 @@ def prepare_mtedx_avsr_manifests(mtedx_path, lang, muavic_path):
             # copy language transcription
             shutil.copyfile(
                 mtedx_txt_dir_path / f"{split}.{lang}",
-                muavic_path / lang / f"{split}_avsr.{lang}",
+                muavic_path / lang / f"{split}.{lang}",
             )
 
 
@@ -334,7 +334,7 @@ def prepare_mtedx_avst_manifests(mtedx_path, mt_trans_path, lang, muavic_path):
                 write_txt_file(pseudo_trans["en"].tolist(), out_tgt_filepath)
                 # copy AVSR manifest to be AVST's
                 shutil.copyfile(
-                    src=muavic_path / lang / f"{split}_avsr.tsv",
+                    src=muavic_path / lang / f"{split}.tsv",
                     dst=out_manifest_filepath,
                 )
 
@@ -345,6 +345,6 @@ def prepare_mtedx_avst_manifests(mtedx_path, mt_trans_path, lang, muavic_path):
                 shutil.copyfile(src=mtedx_trans_path / f"test.en", dst=out_tgt_filepath)
                 # copy AVSR manifest to be AVST's
                 shutil.copyfile(
-                    src=muavic_path / lang / f"{split}_avsr.tsv",
+                    src=muavic_path / lang / f"{split}.tsv",
                     dst=out_manifest_filepath,
                 )

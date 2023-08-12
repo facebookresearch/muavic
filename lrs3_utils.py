@@ -266,7 +266,7 @@ def prepare_lrs3_avsr_manifests(lrs3_path, muavic_path):
 
     for split in SPLITS:
         # create transcription manifest
-        transcription_filepath = muavic_path / "en" / f"{split}_avsr.en"
+        transcription_filepath = muavic_path / "en" / f"{split}.en"
         if not transcription_filepath.exists():
             if split == "train":
                 print(f"\nCreating AVSR manifests for `en`")
@@ -281,7 +281,7 @@ def prepare_lrs3_avsr_manifests(lrs3_path, muavic_path):
             ]
             write_txt_file(transcriptions, transcription_filepath)
         # create AVSR manifest
-        manifest_filepath = muavic_path / "en" / f"{split}_avsr.tsv"
+        manifest_filepath = muavic_path / "en" / f"{split}.tsv"
         if not manifest_filepath.exists():
             audio_datapath = muavic_path / "en" / "audio" / split
             video_datapath = muavic_path / "en" / "video" / split
@@ -393,12 +393,12 @@ def prepare_lrs3_avst_manifests(mt_trans_path, ted2020_path, muavic_path):
         )
         for split in tqdm(SPLITS, desc=f"en-{lang} AVST manifest"):
             # set output files
-            out_tgt_filepath = muavic_path / "en" / lang / f"{split}_avst.{lang}"
-            out_manifest_filepath = muavic_path / "en" / lang / f"{split}_avst.tsv"
+            out_tgt_filepath = muavic_path / "en" / lang / f"{split}.{lang}"
+            out_manifest_filepath = muavic_path / "en" / lang / f"{split}.tsv"
             out_tgt_filepath.parent.mkdir(parents=True, exist_ok=True)
             if not out_tgt_filepath.exists():
                 # load AVSR manifest (AVST manifest is usually a subset)
-                manifest_df = read_av_manifest(muavic_path / "en" / f"{split}_avsr.tsv")
+                manifest_df = read_av_manifest(muavic_path / "en" / f"{split}.tsv")
                 # combine human translation with MT translation for "train" & "valid"
                 if split != "test":
                     # load pseudo-translation
@@ -462,7 +462,7 @@ def prepare_lrs3_avst_manifests(mt_trans_path, ted2020_path, muavic_path):
                     # add English transcriptions
                     manifest_df["en"] = [
                         normalize_text(ln)
-                        for ln in read_txt_file(muavic_path / "en" / f"test_avsr.en")
+                        for ln in read_txt_file(muavic_path / "en" / f"test.en")
                     ]
                     merged_trans = pd.merge(
                         left=manifest_df,
