@@ -258,7 +258,11 @@ To try out our state-of-the-art audio-visual models with different
 audio and video inputs, including a recorded video through the webcam or 
 an uploaded video, checkout our demo:
 
-> LINK TO THE VIDEO
+
+
+https://github.com/facebookresearch/muavic/assets/15960959/d03df3b0-488c-443c-ba3b-452b1a5765d8
+
+
 
 You can read more about our model in the [README](https://github.com/facebookresearch/muavic/tree/main/demo) file in the demo folder.
 # Training
