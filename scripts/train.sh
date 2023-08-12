@@ -1,14 +1,4 @@
 #! /bin/bash
-#SBATCH --job-name=muavic_ru-en
-#SBATCH --partition=ust,learnaccel,devaccel
-#SBATCH --gpus-per-node=8
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=64
-#SBATCH --mem=0
-#SBATCH --time=24:00:00
-#SBATCH --constraint='volta32gb'
-#SBATCH --output=logs/slurm_avst_%j.out
-
 # Copyright (c) Meta Platforms, Inc. and its affiliates.
 # All rights reserved.
 #
