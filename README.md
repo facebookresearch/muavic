@@ -1,9 +1,9 @@
 MuAViC
 ======
 
-[https://arxiv.org/abs/2303.00628](https://arxiv.org/abs/2303.00628)
-
 A Multilingual Audio-Visual Corpus for Robust Speech Recognition and Robust Speech-to-Text Translation.
+
+[Paper](https://www.isca-speech.org/archive/pdfs/interspeech_2023/anwar23_interspeech.pdf)
 
 # Overview
 
